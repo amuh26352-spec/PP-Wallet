@@ -1,0 +1,32 @@
+name: Build APK from ZIP
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Unzip project
+        run: unzip PP-Release.zip -d appsrc
+
+      - name: Build APK
+        run: |
+          cd appsrc
+          ./gradlew assembleRelease
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: PP-Release-APK
+          path: appsrc/app/build/outputs/apk/release/app-release.apk
